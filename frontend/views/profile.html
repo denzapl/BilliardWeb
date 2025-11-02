@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>About</title></head><body>
+<script>
+fetch('inner.html').then(r=>r.text()).then(html=>{
+  const content = `<main class="container my-5"><div class="p-4 bg-white rounded shadow-sm"><h1>About This Demo</h1><p>This set of static pages demonstrates using a single layout (<code>inner.html</code>) that includes Bootstrap. All other views load that layout and replace the <code>&lt;!--CONTENT--&gt;</code> placeholder with view-specific HTML. That keeps Bootstrap referenced only once.</p></div></main>`;
+  const out = html.replace('<!--CONTENT-->', content);
+  document.open(); document.write(out); document.close();
+}).catch(err=>document.body.innerText='Error loading layout: '+err);
+</script>
+</body></html>

@@ -1,0 +1,48 @@
+-- Create database and tables for Billiard project
+CREATE DATABASE IF NOT EXISTS billiard_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE billiard_db;
+
+CREATE TABLE IF NOT EXISTS roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(200) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role_id INT DEFAULT 2,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  category_name VARCHAR(150) NOT NULL UNIQUE
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS billiard_clubs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  owner_name VARCHAR(150) NOT NULL,
+  club_name VARCHAR(200) NOT NULL,
+  club_member_count INT DEFAULT 0,
+  address VARCHAR(300),
+  category_id INT DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  club_id INT NOT NULL,
+  user_id INT NOT NULL,
+  rating TINYINT,
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (club_id) REFERENCES billiard_clubs(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Insert default roles
+INSERT IGNORE INTO roles (id, name) VALUES (1, 'admin'), (2, 'user');

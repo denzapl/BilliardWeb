@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Billiard Clubs API
+  version: 1.0.0
+paths:
+  /api/billiard_clubs:
+    get:
+      summary: List billiard clubs
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create billiard club
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner_name: { type: string }
+                club_name: { type: string }
+                club_member_count: { type: integer }
+                address: { type: string }
+              required: [owner_name, club_name]
+      responses:
+        '201':
+          description: Created

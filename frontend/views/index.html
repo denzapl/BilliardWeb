@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Home</title></head><body>
+<script>
+// Load inner layout and inject home content into the placeholder
+fetch('inner.html').then(r=>r.text()).then(html=>{
+  const content = `<main class="container my-5"><div class="p-4 bg-white rounded shadow-sm"><h1 class="mb-3">Welcome — Home</h1><p class="lead">This is the Home view. Bootstrap is included only in <code>inner.html</code>. Other views load it dynamically.</p><p>Use the navigation to visit other pages.</p></div></main>`;
+  const out = html.replace('<!--CONTENT-->', content);
+  document.open(); document.write(out); document.close();
+}).catch(err=>document.body.innerText = 'Error loading layout: '+err);
+</script>
+</body></html>

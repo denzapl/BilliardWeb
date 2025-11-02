@@ -1,0 +1,7 @@
+{
+    "require": {
+        "flightphp/core": "*",
+        "zircote/swagger-php": "*",
+        "mikecao/flight": "*"
+    }
+}
