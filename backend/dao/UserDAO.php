@@ -1,27 +1,43 @@
 <?php
 namespace App\DAO;
 use PDO;
+use PDOException; 
 
 class UserDAO {
     private $pdo;
-    public function __construct(){
-        $cfg = require __DIR__ . '/../config.php';
-        $db = $cfg['db'];
-        $this->pdo = new PDO('mysql:host='.$db['host'].';dbname='.$db['dbname'].';charset=utf8', $db['user'], $db['pass']);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    public function __construct(array $db) {
+        try {
+            $dsn = 'mysql:host='.$db['host'].';dbname='.$db['dbname'].';charset=utf8';
+            $this->pdo = new PDO($dsn, $db['user'], $db['pass']);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new \Exception("Database connection failed for UserDAO.", 0, $e);
+        }
     }
-    public function getAll(){
-        $stmt = $this->pdo->query('SELECT id, name, email, role FROM users');
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    public function create($data){
-        $stmt = $this->pdo->prepare('INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)');
-        $stmt->execute([
-            ':name'=>$data['name'],
-            ':email'=>$data['email'],
-            ':password'=>password_hash($data['password'], PASSWORD_DEFAULT),
-            ':role'=>$data['role'] ?? 'user'
-        ]);
-        return $this->pdo->lastInsertId();
+
+    /**
+     * Reads a single user profile entry by ID, joining with the role name.
+     * @param int $id The ID of the user to read.
+     * @return array|null The user profile data with role name or null if not found.
+     */
+    public function readUserProfile(int $id): ?array {
+        $sql = 'SELECT 
+                    u.id, 
+                    u.username, 
+                    u.email, 
+                    u.member_since, 
+                    u.total_clubs_managed, 
+                    u.role_id, 
+                    r.role_name
+                FROM users u
+                JOIN roles r ON u.role_id = r.id
+                WHERE u.id = :id';
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $result = $stmt->fetch();
+        return $result ?: null;
     }
 }
